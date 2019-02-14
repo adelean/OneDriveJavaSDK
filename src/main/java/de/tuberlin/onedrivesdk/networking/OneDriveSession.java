@@ -1,18 +1,37 @@
 package de.tuberlin.onedrivesdk.networking;
 
-import com.google.gson.*;
-import com.google.gson.annotations.Expose;
-import com.squareup.okhttp.*;
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.common.ExceptionEventHandler;
 import de.tuberlin.onedrivesdk.common.OneDriveScope;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.annotations.Expose;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
@@ -26,13 +45,15 @@ public class OneDriveSession implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(OneDriveSession.class);
 
-    private final static String ENDPOINT = "https://login.live.com";
+    private final static String ENDPOINT = "https://login.microsoftonline.com";
     private final long refreshDelay = 3000 * 1000;//3000 sec to ms
 
     @Expose
     private final String clientID;
     @Expose
     private final String clientSecret;
+
+    private String code;
 
     private final OneDriveScope[] scopes;
     private OkHttpClient client;
@@ -61,11 +82,14 @@ public class OneDriveSession implements Runnable {
         this.scopes = scopes;
 
         if (redirectUri != null) {
+            this.redirect_uri = redirectUri;
+            /*
             try {
                 this.redirect_uri = URLEncoder.encode(redirectUri, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalArgumentException("redirectURL is not a valid url... or something else went horrobly wrong at this point..." + e.getMessage());
             }
+            */
         }
 
         this.refreshExceptionHandler = refreshExceptionHandler;
@@ -102,13 +126,8 @@ public class OneDriveSession implements Runnable {
 
     public static void authorizeSession(OneDriveSession session, String code) throws OneDriveException {
         //The body of the second step in the code-flow guide
-        String oAuthCodeRedeemBodyString = String.format("client_id=%s&client_secret=%s&code=%s&grant_type=authorization_code",
-                session.getClientID(), session.getClientSecret(), code);
-        if (session.redirect_uri != null) {
-            oAuthCodeRedeemBodyString += String.format("&redirect_uri=%s", session.redirect_uri);
-        }
-
-        handleAuthRequest(session, oAuthCodeRedeemBodyString);
+        session.setCode(code);
+        handleAuthRequest(session, false);
     }
 
     public static void refreshSession(OneDriveSession session, String refreshToken) throws OneDriveException {
@@ -116,13 +135,32 @@ public class OneDriveSession implements Runnable {
         session.refresh();
     }
 
-    private static void handleAuthRequest(OneDriveSession session, String messageBody) throws OneDriveAuthenticationException {
+
+    private static void handleAuthRequest(OneDriveSession session, boolean isRefreshRequest) throws OneDriveAuthenticationException {
         JSONParser jsonParser = new JSONParser();
         //Url of the second step of the Code-FLow guide
-        String oAuthCodeRedeemURL = String.format("%s/oauth20_token.srf", ENDPOINT);
+        String oAuthCodeRedeemURL = String.format("%s/common/oauth2/v2.0/token", ENDPOINT);
 
-        RequestBody oAuthCodeRedeemBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), messageBody);
-        // Create request for remote resource.
+        FormBody.Builder requestBuilder;
+        if (isRefreshRequest) {
+            requestBuilder = new FormBody.Builder()
+                    .add("grant_type", "refresh_token")
+                    .add("client_id", session.getClientID())
+                    .add("client_secret", session.getClientSecret())
+                    .add("refresh_token", session.getCode());
+        } else {
+            requestBuilder = new FormBody.Builder()
+                    .add("grant_type", "authorization_code")
+                    .add("client_id", session.getClientID())
+                    .add("client_secret", session.getClientSecret())
+                    .add("code", session.getCode());
+        }
+        if (session.redirect_uri != null) {
+            requestBuilder.add("redirect_uri", session.redirect_uri);
+        }
+
+        RequestBody oAuthCodeRedeemBody = requestBuilder.build();
+        // Create request for shared resource.
         Request request = new Request.Builder()
                 .url(oAuthCodeRedeemURL)
                 .post(oAuthCodeRedeemBody)
@@ -250,6 +288,14 @@ public class OneDriveSession implements Runnable {
         return clientID;
     }
 
+    private void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
     public String getClientSecret() {
         return clientSecret;
     }
@@ -296,8 +342,8 @@ public class OneDriveSession implements Runnable {
     }
 
     public void refresh() throws OneDriveException {
-        String oAuthRefreshBodyString = String.format("client_id=%s&client_secret=%s&refresh_token=%s&grant_type=refresh_token", clientID, clientSecret, refreshToken);
-        handleAuthRequest(this, oAuthRefreshBodyString);
+        this.setCode(refreshToken);
+        handleAuthRequest(this, true);
     }
 
     public String getAccessURL() {
@@ -305,9 +351,9 @@ public class OneDriveSession implements Runnable {
         try {
             scope = URLEncoder.encode(getScopeString(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Error while encoding scopeString to url, using UTF-8",e);
+            logger.error("Error while encoding scopeString to url, using UTF-8", e);
         }
-        String uri = String.format("%s/oauth20_authorize.srf?client_id=%s&scope=%s&response_type=code", ENDPOINT, clientID, scope);
+        String uri = String.format("%s/common/oauth2/v2.0/authorize?client_id=%s&scope=%s&response_type=code", ENDPOINT, clientID, scope);
 
         if (this.redirect_uri != null) {
             uri += String.format("&redirect_uri=%s", this.redirect_uri);

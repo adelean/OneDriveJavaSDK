@@ -1,8 +1,8 @@
 package de.tuberlin;
 
-import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.common.ConcreteOneDriveSDK;
+import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.common.OneItemType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,9 +10,6 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-/**
- * Created by Andi on 10.05.2015.
- */
 public class OneItemTest {
 
     @Test
@@ -20,9 +17,7 @@ public class OneItemTest {
         try {
             OneItem.parseItemsFromJson(null);
             Assert.fail();
-        } catch (org.json.simple.parser.ParseException e) {
-        } catch (OneDriveException e) {
-        } catch (NullPointerException e) {
+        } catch (org.json.simple.parser.ParseException | OneDriveException | NullPointerException ignored) {
         }
     }
 
@@ -32,9 +27,7 @@ public class OneItemTest {
         try {
             OneItem.fromJSON(null);
             Assert.fail();
-        } catch (org.json.simple.parser.ParseException e) {
-        } catch (OneDriveException e) {
-        } catch (NullPointerException e) {
+        } catch (org.json.simple.parser.ParseException | OneDriveException | NullPointerException ignored) {
         }
     }
 
@@ -44,9 +37,7 @@ public class OneItemTest {
         OneItem folder = null;
         try {
             folder = OneItem.fromJSON(json);
-        } catch (org.json.simple.parser.ParseException e) {
-            Assert.fail();
-        } catch (OneDriveException e) {
+        } catch (org.json.simple.parser.ParseException | OneDriveException e) {
             Assert.fail();
         }
 
@@ -101,13 +92,12 @@ public class OneItemTest {
     @Test
     public void testParseCorruptItems() {
         String json = "{\"val\":[{},{\"file\":{}}]}";
-        List<OneItem> items = null;
         try {
-            items = OneItem.parseItemsFromJson(json, OneItemType.ALL);
+            OneItem.parseItemsFromJson(json, OneItemType.ALL);
             Assert.fail();
-        } catch (OneDriveException | org.json.simple.parser.ParseException e) {
+        } catch (OneDriveException | org.json.simple.parser.ParseException ignored) {
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
     }
@@ -143,7 +133,7 @@ public class OneItemTest {
         try {
             item.setApi(null);
             Assert.fail();
-        } catch (OneDriveException e) {
+        } catch (OneDriveException ignored) {
         }
     }
 
@@ -153,12 +143,12 @@ public class OneItemTest {
         OneItem item = null;
         try {
             item = OneItem.fromJSON("{}");
-        } catch (Exception e){
+        } catch (Exception e) {
             Assert.fail();
         }
         try {
             item.setApi(api);
-        } catch (Exception e){
+        } catch (Exception e) {
             Assert.fail();
         }
     }
@@ -166,14 +156,14 @@ public class OneItemTest {
     @Test
     public void testDeleteItem() {
         ConcreteOneDriveSDK api = Mockito.mock(ConcreteOneDriveSDK.class);
-        OneItem item = null;
+        OneItem item;
         try {
             item = OneItem.fromJSON("{}");
 
             Mockito.doReturn(true).when(api).deleteItem(item);
             item.setApi(api);
             item.delete();
-        } catch (Exception e){
+        } catch (Exception e) {
             Assert.fail();
         }
     }

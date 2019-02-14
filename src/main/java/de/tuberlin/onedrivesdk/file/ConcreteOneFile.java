@@ -2,14 +2,16 @@ package de.tuberlin.onedrivesdk.file;
 
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.common.OneItem;
-import de.tuberlin.onedrivesdk.folder.OneFolder;
 import de.tuberlin.onedrivesdk.downloadFile.ConcreteOneDownloadFile;
 import de.tuberlin.onedrivesdk.downloadFile.OneDownloadFile;
+import de.tuberlin.onedrivesdk.drive.DrivePermission;
+import de.tuberlin.onedrivesdk.folder.OneFolder;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Implementation of OneFile using methods from ConcreteOneDriveSDK
@@ -31,7 +33,7 @@ public class ConcreteOneFile extends OneItem implements OneFile {
     }
 
     public OneDownloadFile download(File targetFile) throws FileNotFoundException {
-        return new ConcreteOneDownloadFile(this,api,targetFile);
+        return new ConcreteOneDownloadFile(this, api, targetFile);
     }
 
     @Override
@@ -87,5 +89,14 @@ public class ConcreteOneFile extends OneItem implements OneFile {
     @Override
     public OneFile move(OneFolder targetFolder) throws InterruptedException, OneDriveException, ParseException, IOException {
         return api.move(id, targetFolder.getId());
+    }
+
+    @Override
+    public List<DrivePermission> getDrivePermissions() throws IOException, OneDriveException {
+        String driveId = null;
+        if (parentReference != null) {
+            driveId = parentReference.getDriveId();
+        }
+        return api.getItemPermission(driveId, this.id);
     }
 }

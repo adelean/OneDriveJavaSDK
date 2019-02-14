@@ -2,8 +2,8 @@ package de.tuberlin.onedrivesdk.folder;
 
 
 import de.tuberlin.onedrivesdk.OneDriveException;
-import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.common.ConflictBehavior;
+import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.common.OneItemType;
 import de.tuberlin.onedrivesdk.file.OneFile;
 import de.tuberlin.onedrivesdk.uploadFile.ConcreteOneUploadFile;
@@ -64,6 +64,16 @@ public class ConcreteOneFolder extends OneItem implements OneFolder {
     }
 
     @Override
+    public List<OneFolder> getRemoteChildFolders(String driveId) throws IOException, OneDriveException {
+        return api.getRemoteChildFolder(driveId, this);
+    }
+
+    @Override
+    public List<OneFile> getRemoteChildFiles(String driveId) throws IOException, OneDriveException {
+        return api.getRemoteChildFiles(driveId, this);
+    }
+
+    @Override
     public List<OneItem> getChildren() throws IOException, OneDriveException {
         return api.getChildren(this, OneItemType.ALL);
     }
@@ -80,7 +90,12 @@ public class ConcreteOneFolder extends OneItem implements OneFolder {
 
     @Override
     public int getChildCount() {
-        return this.folder.childCount;
+        try {
+            return this.getChildren().size();
+        } catch (IOException | OneDriveException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
@@ -91,6 +106,20 @@ public class ConcreteOneFolder extends OneItem implements OneFolder {
     @Override
     public String toString() {
         return "(D) " + name;
+    }
+
+    @Override
+    public String getFullPath() throws IOException, OneDriveException {
+        String fullPath = this.getName();
+        if (this.getName().equals("root")) {
+            return "/root";
+        }
+        OneFolder parentFolder = this.getParentFolder();
+        while (!parentFolder.getName().equals("root")) {
+            fullPath = parentFolder.getName() + "/" + fullPath;
+            parentFolder = parentFolder.getParentFolder();
+        }
+        return fullPath;
     }
 
 }

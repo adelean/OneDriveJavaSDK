@@ -6,6 +6,7 @@ import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.drive.DriveUser;
 import de.tuberlin.onedrivesdk.file.OneFile;
 import de.tuberlin.onedrivesdk.uploadFile.OneUploadFile;
+import com.google.common.annotations.Beta;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public interface OneFolder {
      * @throws OneDriveException
      * @throws IOException
      */
-    OneFolder refresh() throws  OneDriveException, IOException;
+    OneFolder refresh() throws OneDriveException, IOException;
 
     /**
      * Gets the currents folders parent.
@@ -132,6 +133,26 @@ public interface OneFolder {
     List<OneFile> getChildFiles() throws IOException, OneDriveException;
 
     /**
+     * Gets all folder inside the current folder.
+     *
+     * @param driveId
+     * @return all folder inside the current folder
+     * @throws IOException
+     * @throws OneDriveException
+     */
+    List<OneFolder> getRemoteChildFolders(String driveId) throws IOException, OneDriveException;
+
+    /**
+     * Gets all normal files in this folder.
+     *
+     * @param driveId
+     * @return all files in this folder
+     * @throws IOException
+     * @throws OneDriveException
+     */
+    List<OneFile> getRemoteChildFiles(String driveId) throws IOException, OneDriveException;
+
+    /**
      * Gets the children of this folder (e.g. files and folder).
      *
      * @return children
@@ -153,7 +174,7 @@ public interface OneFolder {
     /**
      * Create a folder with the specified name in the current folder.
      *
-     * @param name of the new folder
+     * @param name     of the new folder
      * @param behavior the behavior in case of name conflict
      * @return folder
      * @throws IOException
@@ -178,6 +199,7 @@ public interface OneFolder {
      * @throws IOException
      * @throws OneDriveException
      */
+    @Beta
     OneUploadFile uploadFile(File file) throws IOException, OneDriveException;
 
     String toString();
@@ -190,7 +212,7 @@ public interface OneFolder {
      * @throws OneDriveException
      * @throws IOException
      */
-    boolean delete() throws OneDriveException,IOException;
+    boolean delete() throws OneDriveException, IOException;
 
     /**
      * Gets the raw JSON which is received from the OneDrive API.
@@ -198,4 +220,11 @@ public interface OneFolder {
      * @return raw json
      */
     String getRawJson();
+
+    /**
+     * Gets the full path from the OneDrive API.
+     *
+     * @return String
+     */
+    String getFullPath() throws IOException, OneDriveException;
 }

@@ -2,7 +2,6 @@ package de.tuberlin.onedrivesdk.uploadFile;
 
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.file.OneFile;
-import de.tuberlin.onedrivesdk.networking.OneDriveAuthenticationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +55,7 @@ public interface OneUploadFile extends Callable<OneFile> {
 	 * Will block until file Upload is finished
 	 * @return the OneFile handle of the finished File or null on interruption
 	 */
-	OneUploadFile cancelUpload() throws IOException, OneDriveAuthenticationException;
+	OneUploadFile cancelUpload() throws IOException, OneDriveException;
 	
 	/**
 	 * Gets the file handle of the file that is being uploaded 

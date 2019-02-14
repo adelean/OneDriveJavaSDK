@@ -3,14 +3,13 @@ package de.tuberlin.onedrivesdk.example;
 import asg.cliche.Command;
 import asg.cliche.Param;
 import asg.cliche.ShellFactory;
-import com.google.common.collect.Maps;
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.OneDriveSDK;
+import com.google.common.collect.Maps;
 import de.tuberlin.onedrivesdk.common.OneDriveScope;
 import de.tuberlin.onedrivesdk.common.OneItem;
 import de.tuberlin.onedrivesdk.file.OneFile;
 import de.tuberlin.onedrivesdk.folder.OneFolder;
-import de.tuberlin.onedrivesdk.networking.OneDriveAuthenticationException;
 import de.tuberlin.onedrivesdk.uploadFile.OneUploadFile;
 import de.tuberlin.onedrivesdk.OneDriveFactory;
 import de.tuberlin.onedrivesdk.common.OneDriveCredentials;
@@ -223,8 +222,8 @@ public class ConsoleClient {
         System.out.println(String.format("Downloading %s to %s", currentFolderFiles.get(index).getName(), pathToDownload));
         OneFile tmpFile = currentFolderFiles.get(index);
         try {
-            tmpFile.download(new File(pathToDownload)).startDownload();
-        } catch (OneDriveAuthenticationException e) {
+            tmpFile.download(new File(pathToDownload)).startDownload(null);
+        } catch (OneDriveException e) {
             e.printStackTrace();
         }
     }

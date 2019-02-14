@@ -1,13 +1,15 @@
 package de.tuberlin.onedrivesdk.common;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import de.tuberlin.onedrivesdk.folder.OneFolder;
 import de.tuberlin.onedrivesdk.OneDriveException;
+import de.tuberlin.onedrivesdk.drive.DrivePermission;
 import de.tuberlin.onedrivesdk.drive.DriveUser;
 import de.tuberlin.onedrivesdk.file.ConcreteOneFile;
 import de.tuberlin.onedrivesdk.file.OneFile;
 import de.tuberlin.onedrivesdk.folder.ConcreteOneFolder;
+import de.tuberlin.onedrivesdk.folder.OneFolder;
+import de.tuberlin.onedrivesdk.shared.ConcreteSharedItem;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,7 +31,7 @@ public abstract class OneItem {
     /**
      * The SDK object.
      */
-    protected ConcreteOneDriveSDK api;
+    protected transient ConcreteOneDriveSDK api;
 
     /**
      * The OneDrive id of the resource.
@@ -107,7 +109,7 @@ public abstract class OneItem {
      *
      * @param json JSON from the OneDrive API
      * @return OneItem
-     * @throws ParseException if the JSON can not be parsed
+     * @throws ParseException    if the JSON can not be parsed
      * @throws OneDriveException if the JSON contains an OneDrive Error object from the API
      */
     public static OneItem fromJSON(String json) throws ParseException, OneDriveException {
@@ -121,6 +123,8 @@ public abstract class OneItem {
         Gson gson = new Gson();
         if (root.containsKey("file")) {
             return gson.fromJson(json, ConcreteOneFile.class).setLastRefresh(System.currentTimeMillis());
+        } else if (root.containsKey("remoteItem")) {
+            return gson.fromJson(json, ConcreteSharedItem.class).setLastRefresh(System.currentTimeMillis());
         } else {
             return gson.fromJson(json, ConcreteOneFolder.class).setLastRefresh(System.currentTimeMillis());
         }
@@ -131,7 +135,7 @@ public abstract class OneItem {
      *
      * @param json JSON from the OneDrive API
      * @return a List of OneItems
-     * @throws ParseException if the JSON can not be parsed
+     * @throws ParseException    if the JSON can not be parsed
      * @throws OneDriveException if the JSON contains an OneDrive Error object from the API
      */
     public static List<OneItem> parseItemsFromJson(String json) throws ParseException, OneDriveException {
@@ -144,7 +148,7 @@ public abstract class OneItem {
      * @param json JSON from the OneDrive API
      * @param type OneItemType, can be used to define which type of items should be parsed
      * @return items from json
-     * @throws ParseException if the JSON can not be parsed
+     * @throws ParseException    if the JSON can not be parsed
      * @throws OneDriveException if the json dose not contain a 'value' attribute
      */
     public static List<OneItem> parseItemsFromJson(String json, OneItemType type) throws ParseException, OneDriveException {
@@ -371,6 +375,16 @@ public abstract class OneItem {
         return lastRefresh;
     }
 
+
+    /**
+     * Gets the parentReference.
+     *
+     * @return ParentReference
+     */
+    public ParentReference getParentReference() {
+        return parentReference;
+    }
+
     /**
      * Sets the timestamp of the last refresh.
      *
@@ -390,12 +404,27 @@ public abstract class OneItem {
      * @throws OneDriveException
      */
     public OneItem refreshItem() throws IOException, OneDriveException {
-        if(this instanceof OneFile){
+        if (this instanceof OneFile) {
             return (OneItem) api.getFileById(id);
         } else {
             return (OneItem) api.getFolderById(id);
         }
     }
+
+
+    /**
+     * Gets the list of permissions from the OneDrive API.
+     *
+     * @return List<DrivePermission>
+     */
+    public List<DrivePermission> getDrivePermissions() throws IOException, OneDriveException {
+        String driveId = null;
+        if (parentReference != null) {
+            driveId = parentReference.getDriveId();
+        }
+        return this.api.getItemPermission(driveId, this.id);
+    }
+
 
     /**
      * Is file.

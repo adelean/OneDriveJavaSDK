@@ -2,8 +2,8 @@ package de.tuberlin.onedrivesdk;
 
 import de.tuberlin.onedrivesdk.common.ConcreteOneDriveSDK;
 import de.tuberlin.onedrivesdk.common.ExceptionEventHandler;
-import de.tuberlin.onedrivesdk.common.OneDriveScope;
 import de.tuberlin.onedrivesdk.common.OneDriveCredentials;
+import de.tuberlin.onedrivesdk.common.OneDriveScope;
 
 public final class OneDriveFactory {
 
@@ -43,7 +43,7 @@ public final class OneDriveFactory {
      * @return
      */
     public static OneDriveSDK createOneDriveSDK(String clientId, String clientSecret,
-                                                String redirect_uri,ExceptionEventHandler handler, OneDriveScope... scopes) {
+                                                String redirect_uri, ExceptionEventHandler handler, OneDriveScope... scopes) {
         return ConcreteOneDriveSDK.createOneDriveConnection(clientId,clientSecret,redirect_uri,handler,scopes);
     }
 

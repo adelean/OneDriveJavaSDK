@@ -1,7 +1,7 @@
 package de.tuberlin.onedrivesdk.downloadFile;
 
+import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.file.OneFile;
-import de.tuberlin.onedrivesdk.networking.OneDriveAuthenticationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public interface OneDownloadFile {
      *
      * @throws IOException
      */
-    void startDownload() throws IOException, OneDriveAuthenticationException;
+    void startDownload(String driveId) throws IOException, OneDriveException;
 
     /**
      * Gets the file handel of the downloaded file.

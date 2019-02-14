@@ -6,19 +6,18 @@ import org.junit.Assert;
 
 import java.io.IOException;
 
-/**
- * Created by Sebastian on 10.06.2015.
- */
 public class TestSDKFactory {
 
-    public static OneDriveSDK getInstance(){
+    public static OneDriveSDK getInstance() {
 
         try {
             return ConcreteOneDriveSDK.createFromSession(SessionProvider.getSession());
         } catch (IOException e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
             return null;
         } catch (OneDriveException e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
             return null;
         }

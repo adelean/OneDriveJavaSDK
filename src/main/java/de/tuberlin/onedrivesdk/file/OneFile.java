@@ -1,15 +1,19 @@
 package de.tuberlin.onedrivesdk.file;
 
 import de.tuberlin.onedrivesdk.OneDriveException;
-import de.tuberlin.onedrivesdk.folder.OneFolder;
 import de.tuberlin.onedrivesdk.downloadFile.OneDownloadFile;
+import de.tuberlin.onedrivesdk.drive.DrivePermission;
 import de.tuberlin.onedrivesdk.drive.DriveUser;
+import de.tuberlin.onedrivesdk.folder.OneFolder;
+import com.google.common.annotations.Beta;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+
 /**
  * This Interface provides all Methods to handle a File
  *
@@ -171,19 +175,21 @@ public interface OneFile {
      * @throws ParseException
      * @throws InterruptedException
      */
+    @Beta
     OneFile copy(OneFolder targetFolder) throws IOException, OneDriveException, ParseException, InterruptedException;
 
     /**
      * Copy this file into the target folder.
      *
      * @param targetFolder destination folder
-     * @param name a new name for the file
+     * @param name         a new name for the file
      * @return the new created reference of the file in the new folder
      * @throws IOException
      * @throws OneDriveException
      * @throws ParseException
      * @throws InterruptedException
      */
+    @Beta
     OneFile copy(OneFolder targetFolder, String name) throws IOException, OneDriveException, ParseException, InterruptedException;
 
     /**
@@ -196,6 +202,7 @@ public interface OneFile {
      * @throws ParseException
      * @throws IOException
      */
+    @Beta
     OneFile move(OneFolder targetFolder) throws InterruptedException, OneDriveException, ParseException, IOException;
 
     /**
@@ -204,4 +211,14 @@ public interface OneFile {
      * @return raw json
      */
     String getRawJson();
+
+
+    /**
+     * Gets all shared items by drive.
+     *
+     * @return List DrivePermission
+     * @throws IOException
+     * @throws OneDriveException
+     */
+    List<DrivePermission> getDrivePermissions() throws IOException, OneDriveException;
 }
