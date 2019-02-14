@@ -1,8 +1,8 @@
 package de.tuberlin.onedrivesdk.common;
 
-import com.squareup.okhttp.OkHttpClient;
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.networking.OneDriveSession;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-/**
- * Created by Sebastian on 07.05.2015.
- */
-public class SessionProvider  {
+public class SessionProvider {
 
     private final static String clientID = OneDriveCredentials.getClientId();
     private final static String clientSecret = OneDriveCredentials.getClientSecret();
@@ -24,11 +21,10 @@ public class SessionProvider  {
     static File sessionFile = new File("testSession.ser");
 
     public static OneDriveSession getSession() throws IOException, OneDriveException {
-        if(sessionFile.exists()){
+        if (sessionFile.exists()) {
             try {
                 OneDriveSession session = OneDriveSession.readFromFile(sessionFile);
-                if(session.isAuthenticated()){
-
+                if (session.isAuthenticated()) {
                     return session;
                 }
             } catch (IOException e) {
@@ -39,8 +35,8 @@ public class SessionProvider  {
     }
 
     private static OneDriveSession openSession() throws IOException, OneDriveException {
-        final OneDriveSession session = OneDriveSession.initializeSession(new OkHttpClient(),clientID, clientSecret,
-                null,new OneDriveScope[]{OneDriveScope.SIGNIN, OneDriveScope.OFFLINE_ACCESS, OneDriveScope.READWRITE});
+        final OneDriveSession session = OneDriveSession.initializeSession(new OkHttpClient(), clientID, clientSecret,
+                "http://localhost:3000/auth/openid/return", new OneDriveScope[]{OneDriveScope.OFFLINE_ACCESS, OneDriveScope.READWRITE, OneDriveScope.USER_READ});
 
 
         openWebpage(new URL(session.getAccessURL()));
@@ -68,11 +64,11 @@ public class SessionProvider  {
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        while (!session.isAuthenticated()){
+        while (!session.isAuthenticated()) {
             Thread.yield();
         }
 
-        OneDriveSession.write(session,sessionFile);
+        OneDriveSession.write(session, sessionFile);
 
         return session;
 

@@ -57,8 +57,7 @@ public class ConcreteOneUploadFile implements OneUploadFile {
 		} else {
 			throw new NullPointerException("FileToUpload was null");
 		}
-		this.uploadSession = api.createUploadSession(parentFolder, fileToUpload.getName());
-		this.uploadUrl = this.uploadSession.getUploadURL();
+		this.uploadUrl = String.format("drive/items/%s:/%s:/content", parentFolder.getId(), fileToUpload.getName());;
     }
 
     @Override
@@ -173,7 +172,7 @@ public class ConcreteOneUploadFile implements OneUploadFile {
 	}
 
     @Override
-	public OneUploadFile cancelUpload() throws IOException, OneDriveAuthenticationException {
+	public OneUploadFile cancelUpload() throws IOException, OneDriveException {
 		logger.info("Canceling upload");
 		this.canceled = true;
 		if (uploadSession != null) {

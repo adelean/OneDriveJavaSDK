@@ -1,12 +1,11 @@
 package de.tuberlin.onedrivesdk.drive;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import de.tuberlin.onedrivesdk.OneDriveException;
 import de.tuberlin.onedrivesdk.common.ConcreteOneDriveSDK;
-import de.tuberlin.onedrivesdk.folder.OneFolder;
 import de.tuberlin.onedrivesdk.common.OneDriveError;
+import de.tuberlin.onedrivesdk.folder.OneFolder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +22,7 @@ import java.util.List;
  */
 public class ConcreteOneDrive implements OneDrive {
     protected String id;
-    protected ConcreteOneDriveSDK api;
+    protected transient ConcreteOneDriveSDK api;
     protected String driveType;
     protected DriveOwner owner;
     protected DriveQuota quota;
