@@ -24,7 +24,7 @@ System.out.println(rootFolder);
 A console client with several command can be found in de.tuberlin.onedrivesdk.example.ConsoleClient.
 
 ## Registration
-1. Register your client application on [Mirosoft Developers](http://go.microsoft.com/fwlink/p/?LinkId=193157)
+1. Register your client application on [Microsoft Developers](http://go.microsoft.com/fwlink/p/?LinkId=193157)
 2. The drive is created at the first login. Login into your account in the web browser, otherwise you will get an authentication error if you try to run the SDK with your credentials.
     - The user have to be logged in at least once to use your application.  
 3. (optional) Register a website  if you want to use this SDK in a web app. Otherwise you can register http://localhost.
@@ -91,7 +91,7 @@ String refreshToken = sdk.getRefreshToken();
  sdk.authenticateWithRefreshToken("[refreshToken]");   
   ```
  
-## Featuers
+## Features
 
 ### TextFile Configuration
 #### [Credentials](http://tawalaya.github.io/OneDriveJavaSDK/docs/de/tuberlin/onedrivesdk/common/OneDriveCredentials.html)
