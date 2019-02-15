@@ -37,24 +37,31 @@ Download our latest release [here](https://github.com/tawalaya/OneDriveJavaSDK/r
 Alternatively you can use maven. We host a maven artifact on github. The following code snippet can be used to for dependency management with maven.
 ```xml
 ...
-<repositories>
-    <repository>
-        <id>de.tuberlin</id>
-        <url>https://raw.github.com/tawalaya/onedrivejavasdk/mvn-repo/</url>
-        <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-        </snapshots>
-    </repository>
-</repositories>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
-<dependencies>
-    <dependency>
-        <groupId>de.tuberlin</groupId>
-        <artifactId>onedrivesdk</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-</dependencies>
+    <dependencies>
+        <!-- OneDrive -->
+        <dependency>
+            <groupId>com.github.adelean</groupId>
+            <artifactId>OneDriveJavaSDK</artifactId>
+            <version>0.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 ...
 ```
 ## Recommended CodeFlow for user authentication
