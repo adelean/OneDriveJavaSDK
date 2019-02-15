@@ -49,7 +49,7 @@ Alternatively you can use maven. We host a maven artifact on github. The followi
         <dependency>
             <groupId>com.github.adelean</groupId>
             <artifactId>OneDriveJavaSDK</artifactId>
-            <version>5912a28b1d9dac5f3e0310ab38ba17f462ff5a59</version>
+            <version>0.0.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
