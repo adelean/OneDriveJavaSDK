@@ -678,10 +678,8 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
 
         PreparedRequest downloadRequest = new PreparedRequest(url, PreparedRequestMethod.GET);
         OneResponse getResponse = makeRequest(downloadRequest);
-        PreparedRequest contentRequest = new PreparedRequest(getResponse.getHeader("Content-Location"), PreparedRequestMethod.GET);
-        OneResponse contentResponse = makeRequest(contentRequest);
 
-        return contentResponse.getBodyAsBytes();
+        return getResponse.getBodyAsBytes();
     }
 
     /**
