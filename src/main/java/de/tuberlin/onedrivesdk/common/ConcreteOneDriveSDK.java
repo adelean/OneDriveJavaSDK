@@ -160,7 +160,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
     public OneFolder getRemoteFolderById(String driveId, String id) throws IOException, OneDriveException {
         String requestURL;
         if (driveId == null) {
-            requestURL = String.format("drive/items/%s", id);
+            requestURL = String.format("me/drive/items/%s", id);
         } else {
             requestURL = String.format("drives/%s/items/%s", driveId, id);
         }
@@ -192,7 +192,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
     public OneFolder getRootFolder(OneDrive drive) throws IOException, OneDriveException {
         PreparedRequest request;
         if (drive == null) {
-            request = new PreparedRequest("drive/root", PreparedRequestMethod.GET);
+            request = new PreparedRequest("me/drive/root", PreparedRequestMethod.GET);
         } else {
             request = new PreparedRequest(String.format("drives/%s/root/", drive.getId()), PreparedRequestMethod.GET);
         }
@@ -219,7 +219,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
     public OneFile getRemoteFileById(String driveId, String id) throws IOException, OneDriveException {
         String requestURL;
         if (driveId == null) {
-            requestURL = String.format("drive/items/%s", id);
+            requestURL = String.format("me/drive/items/%s", id);
         } else {
             requestURL = String.format("drives/%s/items/%s", driveId, id);
         }
@@ -241,7 +241,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
     public List<DrivePermission> getItemPermission(String driveId, String id) throws IOException, OneDriveException {
         String requestURL;
         if (driveId == null) {
-            requestURL = String.format("drive/items/%s/permissions", id);
+            requestURL = String.format("me/drive/items/%s/permissions", id);
         } else {
             requestURL = String.format("drives/%s/items/%s/permissions", driveId, id);
         }
@@ -388,7 +388,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
     public List<OneItem> getRemoteChildren(String driveId, ConcreteOneFolder concreteOneFolder, OneItemType type) throws IOException, OneDriveException {
         String requestURL;
         if (driveId == null) {
-            requestURL = String.format("drive/items/%s/children", concreteOneFolder.getId());
+            requestURL = String.format("me/drive/items/%s/children", concreteOneFolder.getId());
         } else {
             requestURL = String.format("drives/%s/items/%s/children", driveId, concreteOneFolder.getId());
         }
@@ -670,7 +670,7 @@ public class ConcreteOneDriveSDK implements OneDriveSDK {
         session.getClient().newBuilder().followRedirects(true);
         String url;
         if (driveId == null) {
-            url = String.format("drive/items/%s/content", fileID);
+            url = String.format("me/drive/items/%s/content", fileID);
         } else {
             url = String.format("drives/%s/items/%s/content", driveId, fileID);
 
