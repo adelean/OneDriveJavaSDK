@@ -121,10 +121,10 @@ public abstract class OneItem {
         }
 
         Gson gson = new Gson();
-        if (root.containsKey("file")) {
-            return gson.fromJson(json, ConcreteOneFile.class).setLastRefresh(System.currentTimeMillis());
-        } else if (root.containsKey("remoteItem")) {
+        if (root.containsKey("remoteItem")) {
             return gson.fromJson(json, ConcreteSharedItem.class).setLastRefresh(System.currentTimeMillis());
+        } else if (root.containsKey("file")) {
+            return gson.fromJson(json, ConcreteOneFile.class).setLastRefresh(System.currentTimeMillis());
         } else {
             return gson.fromJson(json, ConcreteOneFolder.class).setLastRefresh(System.currentTimeMillis());
         }
